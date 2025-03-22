@@ -96,15 +96,16 @@ $app->get('/users/{id}', function (Request $request, Response $response, array $
 $app->post('/offers', function (Request $request, Response $response) use ($db) {
     try {
         $data = json_decode($request->getBody()->getContents(), true);
-        if ($data === null || empty($data['employer']) || empty($data['tags']) || empty($data['address'])) {
+        if ($data === null || empty($data['employer']) || empty($data['tags']) || empty($data['address']) || empty($data['title']) || empty($data['category'])) {
             $response->getBody()->write(json_encode(['error' => 'Faltan campos obligatorios']));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
-        $stmt = $db->prepare("INSERT INTO OFFERS (employee, employer, tags, address, additional_info, price, timetable) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $db->prepare("INSERT INTO OFFERS (employee, employer, tags, address, additional_info, price, timetable, title, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $data['employee'] ?? null, $data['employer'],
             $data['tags'], $data['address'], $data['additional_info'] ?? null,
-            $data['price'] ?? null, $data['timetable'] ?? null
+            $data['price'] ?? null, $data['timetable'] ?? null,
+            $data['title'], $data['category']
         ]);
         $response->getBody()->write(json_encode(['id' => $db->lastInsertId()]));
         return $response->withHeader('Content-Type', 'application/json');
@@ -188,6 +189,46 @@ $app->delete('/offers/{id}', function (Request $request, Response $response, arr
         return $response->withHeader('Content-Type', 'application/json');
     } catch (PDOException $e) {
         $response->getBody()->write(json_encode(['error' => 'Offer deletion error']));
+        return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+    }
+});
+
+// Obtener todas las ofertas con filtros opcionales
+$app->get('/offers', function (Request $request, Response $response) use ($db) {
+    try {
+        $queryParams = $request->getQueryParams();
+        $sql = "SELECT * FROM OFFERS WHERE 1=1";
+        $params = [];
+
+        if (!empty($queryParams['employer'])) {
+            $sql .= " AND employer = ?";
+            $params[] = $queryParams['employer'];
+        }
+        if (!empty($queryParams['employee'])) {
+            $sql .= " AND employee = ?";
+            $params[] = $queryParams['employee'];
+        }
+        if (!empty($queryParams['tags'])) {
+            $sql .= " AND tags LIKE ?";
+            $params[] = '%' . $queryParams['tags'] . '%';
+        }
+        if (!empty($queryParams['address'])) {
+            $sql .= " AND address LIKE ?";
+            $params[] = '%' . $queryParams['address'] . '%';
+        }
+        if (!empty($queryParams['category'])) {
+            $sql .= " AND category LIKE ?";
+            $params[] = '%' . $queryParams['category'] . '%';
+        }
+
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        $offers = $stmt->fetchAll();
+
+        $response->getBody()->write(json_encode($offers));
+        return $response->withHeader('Content-Type', 'application/json');
+    } catch (PDOException $e) {
+        $response->getBody()->write(json_encode(['error' => 'Offer retrieval error']));
         return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
     }
 });
