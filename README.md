@@ -123,10 +123,13 @@ URL: http://localhost:8000/offers
 
 Ejemplo sin filtros: http://localhost:8000/offers
 
-NOTA IMPORTANTE: LAS OFERTAS SE HAN MODIFICADO PARA QUE TENGAN UN TÍTULO Y UNA CATEGORÍA
+*Nota: de momento solo se puede filtrar por employer, employee, tags, address y category*
 
 Ejemplo filtrando por employer: http://localhost:8000/offers?employer=1
 
 Ejemplo filtrando por tags: http://localhost:8000/offers?tags=php
+
+
+## NOTA IMPORTANTE: LAS OFERTAS SE HAN MODIFICADO PARA QUE TENGAN UN TÍTULO Y UNA CATEGORÍA
 
 
