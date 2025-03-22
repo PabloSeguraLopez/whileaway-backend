@@ -123,7 +123,7 @@ URL: http://localhost:8000/offers
 
 Ejemplo sin filtros: http://localhost:8000/offers
 
-*Nota: de momento solo se puede filtrar por employer, employee, tags y address*
+*Nota: de momento solo se puede filtrar por employer, employee, tags, address y category*
 
 Ejemplo filtrando por employer: http://localhost:8000/offers?employer=1
 
