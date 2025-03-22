@@ -38,10 +38,12 @@ Ejemplo de cuerpo del mensaje:
 Devuelve una respuesta:
 ```
 {
-  "authenticated": true
+  "authenticated": 1
 }
 
 ```
+
+Si es erróneo, el backend devolverá -1
 
 ## Obtener un usuario por ID
 Método: GET

@@ -67,11 +67,17 @@ $app->post('/users/authenticate', function (Request $request, Response $response
             $response->getBody()->write(json_encode(['error' => 'Faltan campos obligatorios']));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
-        $stmt = $db->prepare("SELECT hashed_password FROM USERS WHERE email = ?");
+        $stmt = $db->prepare("SELECT hashed_password, id FROM USERS WHERE email = ?");
         $stmt->execute([$data['email']]);
         $user = $stmt->fetch();
         $isValid = $user && ($data['password'] === $user['hashed_password']);
-        $response->getBody()->write(json_encode(['authenticated' => $isValid]));
+        if ($isValid) {
+            $response->getBody()->write(json_encode(['authenticated' => true, 'id' => $user['id']]));
+            return $response->withHeader('Content-Type', 'application/json');
+        } else {
+            $response->getBody()->write(json_encode(['authenticated' => -1]));
+            return $response->withHeader('Content-Type', 'application/json');
+        }
         return $response->withHeader('Content-Type', 'application/json');
     } catch (PDOException $e) {
         $response->getBody()->write(json_encode(['error' => 'Authentication error']));
