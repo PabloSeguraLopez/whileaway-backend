@@ -27,11 +27,14 @@ $app->post('/users', function (Request $request, Response $response) use ($db) {
         }
 
         // Validar campos requeridos
-        if (empty($data['name']) || empty($data['email']) || empty($data['password'])) {
+        if (empty($data['name']) || empty($data['email']) || empty($data['password']) || empty($data['role'])) {
             $response->getBody()->write(json_encode(['error' => 'Faltan campos obligatorios']));
             return $response->withStatus(400)->withHeader('Content-Type', 'application/json');
         }
 
+        // Determinar is_employer e is_employee en base al rol recibido
+        $is_employer = ($data['role'] === 'employer') ? 1 : 0;
+        $is_employee = ($data['role'] === 'employee') ? 1 : 0;
 
         $stmt = $db->prepare("INSERT INTO USERS (name, email, hashed_password, is_employer, is_employee, photo_path, address, phone_number, cv) 
                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -40,8 +43,8 @@ $app->post('/users', function (Request $request, Response $response) use ($db) {
             $data['name'], 
             $data['email'], 
             $data['password'],
-            $data['is_employer'] ?? 0, 
-            $data['is_employee'] ?? 0, 
+            $is_employer,
+            $is_employee, 
             $data['photo_path'] ?? null, 
             $data['address'] ?? null, 
             $data['phone_number'] ?? null, 
