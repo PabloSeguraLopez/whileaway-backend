@@ -75,7 +75,7 @@ $app->post('/users/authenticate', function (Request $request, Response $response
         $user = $stmt->fetch();
         $isValid = $user && ($data['password'] === $user['hashed_password']);
         if ($isValid) {
-            $response->getBody()->write(json_encode(['authenticated' => true, 'id' => $user['id']]));
+            $response->getBody()->write(json_encode(['authenticated' => 1, 'id' => $user['id']]));
             return $response->withHeader('Content-Type', 'application/json');
         } else {
             $response->getBody()->write(json_encode(['authenticated' => -1]));
