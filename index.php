@@ -245,19 +245,19 @@ $app->get('/offers', function (Request $request, Response $response) use ($db) {
 
 // Obtener lista de posibles categorías
 $app->get('/categories', function (Request $request, Response $response) {
-    $categories = ['Tech', 'Health', 'Finance', 'Education'];
+    $categories = ['Cleaning', 'Gardening', 'Tutoring', 'Pet care', 'Maintenance', 'Other'];
     $response->getBody()->write(json_encode($categories));
     return $response->withHeader('Content-Type', 'application/json');
 });
 //Obtener lista de posibles tags
 $app->get('/tags', function (Request $request, Response $response) {
-    $tags = ['Remote', 'On-site', 'Hybrid', 'Online'];
+    $tags = ['Exotic animal', 'Difficult plantcare'];
     $response->getBody()->write(json_encode($tags));
     return $response->withHeader('Content-Type', 'application/json');
 });
 //Obtener lista de posibles sueldos
 $app->get('/prices', function (Request $request, Response $response) {
-    $prices = ['1000', '2000', '3000', '4000', '5000'];
+    $prices = [1000, 2000, 3000, 4000, 5000];
     $response->getBody()->write(json_encode($prices));
     return $response->withHeader('Content-Type', 'application/json');
 });
