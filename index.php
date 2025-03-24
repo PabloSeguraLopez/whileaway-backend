@@ -230,6 +230,10 @@ $app->get('/offers', function (Request $request, Response $response) use ($db) {
             $sql .= " AND title LIKE ?";
             $params[] = $queryParams['title'];
         }
+        if (!empty($queryParams['employer'])) {
+            $sql .= " AND employer = ?";
+            $params[] = $queryParams['employer'];
+        }
 
         $stmt = $db->prepare($sql);
         $stmt->execute($params);
