@@ -207,32 +207,28 @@ $app->delete('/offers/{id}', function (Request $request, Response $response, arr
     }
 });
 
-// Obtener todas las ofertas con filtros opcionales
+// Obtener todas las ofertas con filtros opcionales desde la URL
 $app->get('/offers', function (Request $request, Response $response) use ($db) {
     try {
         $queryParams = $request->getQueryParams();
         $sql = "SELECT * FROM OFFERS WHERE 1=1";
         $params = [];
 
-        if (!empty($queryParams['employer'])) {
-            $sql .= " AND employer = ?";
-            $params[] = $queryParams['employer'];
-        }
-        if (!empty($queryParams['employee'])) {
-            $sql .= " AND employee = ?";
-            $params[] = $queryParams['employee'];
-        }
         if (!empty($queryParams['tags'])) {
             $sql .= " AND tags LIKE ?";
             $params[] = '%' . $queryParams['tags'] . '%';
         }
-        if (!empty($queryParams['address'])) {
-            $sql .= " AND address LIKE ?";
-            $params[] = '%' . $queryParams['address'] . '%';
-        }
         if (!empty($queryParams['category'])) {
             $sql .= " AND category LIKE ?";
             $params[] = '%' . $queryParams['category'] . '%';
+        }
+        if (!empty($queryParams['price'])) {
+            $sql .= " AND price >= ?";
+            $params[] = (float)$queryParams['price'];
+        }
+        if (!empty($queryParams['title'])) {
+            $sql .= " AND title LIKE ?";
+            $params[] = $queryParams['title'];
         }
 
         $stmt = $db->prepare($sql);
@@ -246,5 +242,25 @@ $app->get('/offers', function (Request $request, Response $response) use ($db) {
         return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
     }
 });
+
+// Obtener lista de posibles categorías
+$app->get('/categories', function (Request $request, Response $response) {
+    $categories = ['Tech', 'Health', 'Finance', 'Education'];
+    $response->getBody()->write(json_encode($categories));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+//Obtener lista de posibles tags
+$app->get('/tags', function (Request $request, Response $response) {
+    $tags = ['Remote', 'On-site', 'Hybrid', 'Online'];
+    $response->getBody()->write(json_encode($tags));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+//Obtener lista de posibles sueldos
+$app->get('/prices', function (Request $request, Response $response) {
+    $prices = ['1000', '2000', '3000', '4000', '5000'];
+    $response->getBody()->write(json_encode($prices));
+    return $response->withHeader('Content-Type', 'application/json');
+});
+
 
 $app->run();
